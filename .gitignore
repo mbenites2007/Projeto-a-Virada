@@ -1,0 +1,10 @@
+# Arquivos de trabalho / origem (não fazem parte do site publicado)
+_extraido/
+*.zip
+preview-*.html
+Capa.png
+Logo.png
+
+# Sistema
+Thumbs.db
+.DS_Store

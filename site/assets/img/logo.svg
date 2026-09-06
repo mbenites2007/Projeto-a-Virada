@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="A Virada – 30 Dias">
+  <circle cx="50" cy="50" r="47" fill="#0B2947" stroke="#D8A742" stroke-width="2.5"/>
+  <circle cx="50" cy="19" r="3.2" fill="#F0C968"/>
+  <path d="M29 74 L50 30 L71 74" fill="none" stroke="#D8A742" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M20 60 H80" stroke="#F0C968" stroke-width="3" stroke-linecap="round"/>
+</svg>
