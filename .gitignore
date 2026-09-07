@@ -10,4 +10,4 @@ Thumbs.db
 .DS_Store
 
 # Original do ebook na raiz (a cópia publicada fica em site/assets/ebook/)
-/a-virada-30-dias.pdf
+/*.pdf
