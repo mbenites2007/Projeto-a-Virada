@@ -13,7 +13,7 @@ Tempo: cerca de 5 minutos. Você precisa estar logado na sua conta Google.
 4. Clique no ícone de disquete (Salvar).
 
 ## 3. Criar as abas (uma vez)
-1. Na barra acima do código, no menu suspenso de funções, escolha **setup**.
+1. Na barra acima do código, deixe a função **doGet** selecionada (é a padrão) ou escolha **setup**; as duas criam as abas quando executadas pelo editor.
 2. Clique em **Executar**.
 3. O Google pede autorização: **Revisar permissões → escolha sua conta → Avançado → Acessar (não seguro) → Permitir**.
    O aviso aparece porque o script é seu e não passou por verificação do Google; é normal.

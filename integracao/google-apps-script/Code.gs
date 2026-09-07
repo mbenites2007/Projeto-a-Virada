@@ -29,8 +29,13 @@ var SHEETS = {
   }
 };
 
-/** Abrir a URL /exec no navegador mostra este JSON: serve para conferir que a implantação está ativa. */
-function doGet() {
+/**
+ * Abrir a URL /exec no navegador mostra um JSON: serve para conferir que a implantação está ativa.
+ * Rodar doGet pelo botão "Executar" do editor (sem requisição, e == undefined) cria/atualiza as abas,
+ * o mesmo que rodar setup(). Assim não é preciso trocar a função no seletor do editor.
+ */
+function doGet(e) {
+  if (!e) { setup(); return json_({ ok: true, setup: true }); }
   return json_({ ok: true, service: "a-virada-webhook", hint: "Este endereço recebe POST em JSON enviados pelo site." });
 }
 
