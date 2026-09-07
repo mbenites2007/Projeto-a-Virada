@@ -14,7 +14,7 @@ window.AV_CONFIG = {
      Usado nos links de compartilhamento, canonical e Open Graph.
      Sem barra no final. Ex.: "https://avirada30dias.com.br"
      ------------------------------------------------------------------- */
-  SITE_URL: "https://mbenites2007.github.io/a-virada-30-dias",
+  SITE_URL: "https://mbenites2007.github.io/Projeto-a-Virada",
 
   /* -------------------------------------------------------------------
      2) ARQUIVO DO EBOOK (PDF)

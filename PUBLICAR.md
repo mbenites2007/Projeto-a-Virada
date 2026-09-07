@@ -18,10 +18,10 @@ Abrir http://localhost:8080
 ## Publicar no GitHub Pages (primeira vez)
 
 1. Autenticar o GitHub CLI: `gh auth login` (navegador, conta mbenites2007).
-2. Criar o repositório e enviar: `gh repo create a-virada-30-dias --public --source=. --push`
+2. Criar o repositório e enviar: `(já publicado pelo GitHub Desktop como Projeto-a-Virada)`
 3. No repositório: Settings → Pages → Source = **GitHub Actions**.
 4. Aguardar o workflow "Publicar site no GitHub Pages" terminar. Endereço:
-   `https://mbenites2007.github.io/a-virada-30-dias/`
+   `https://mbenites2007.github.io/Projeto-a-Virada/`
 5. Colar esse endereço em `SITE_URL` no `site/assets/js/config.js`, commitar e enviar.
 
 ## Pendências de conteúdo (site/assets/js/config.js)
