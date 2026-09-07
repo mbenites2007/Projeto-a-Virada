@@ -173,7 +173,7 @@ function resumo_() {
 
   // Tabelas ao lado: de onde as pessoas chegaram e quais páginas abriram
   sh.getRange("D1").setValue("Visitas por origem").setFontWeight("bold");
-  var origem = "=IFERROR(QUERY(ARRAYFORMULA(IF(Visitas!A2:A=\"\",\"\",IF(Visitas!E2:E=\"\",\"(direto / sem origem)\",Visitas!E2:E))),"
+  var origem = "=IFERROR(QUERY(ARRAYFORMULA(IF(Visitas!A2:A=\"\",\"\",IF(Visitas!G2:G<>\"\",Visitas!G2:G,IF(Visitas!E2:E=\"\",\"(direto / sem origem)\",Visitas!E2:E)))),"
              + "\"select Col1, count(Col1) where Col1 <> '' group by Col1 order by count(Col1) desc label Col1 'Origem', count(Col1) 'Visitas'\",0),\"sem visitas ainda\")";
   sh.getRange("D2").setFormula(ptBR ? toLocale_(origem) : origem);
   sh.getRange("D12").setValue("Visitas por página").setFontWeight("bold");
@@ -182,6 +182,7 @@ function resumo_() {
 
   sh.getRange("A1").setFontWeight("bold").setFontSize(13);
   sh.getRange("A2:A15").setFontWeight("bold");
+  sh.getRange("B2:B13").setNumberFormat("0");
   sh.getRange("B14:B15").setNumberFormat("0.0%");
   sh.setColumnWidth(1, 260); sh.setColumnWidth(2, 110); sh.setColumnWidth(3, 30); sh.setColumnWidth(4, 260); sh.setColumnWidth(5, 90);
   ss.setActiveSheet(sh); ss.moveActiveSheet(1);
