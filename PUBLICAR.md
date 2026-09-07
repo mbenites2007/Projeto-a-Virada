@@ -28,9 +28,9 @@ Abrir http://localhost:8080
 
 | Campo               | Situação            | Efeito enquanto vazio                                   |
 |---------------------|---------------------|---------------------------------------------------------|
-| `SITE_URL`          | vazio               | links de compartilhamento usam o endereço atual da página |
-| PDF do ebook        | ausente             | página de obrigado mostra aviso amarelo, sem download    |
-| `CONTACT_EMAIL`     | placeholder         | política de privacidade mostra "e-mail não configurado"  |
+| `SITE_URL`          | configurado         | https://mbenites2007.github.io/Projeto-a-Virada           |
+| PDF do ebook        | publicado (40 pág., 8 MB) | botão de download entrega o arquivo                  |
+| `CONTACT_EMAIL`     | configurado         | aparece na política de privacidade e no rodapé            |
 | `PIX_PAYLOAD`/`PIX_KEY` | vazios          | seção de contribuição aparece como "indisponível"        |
 | `LEAD_WEBHOOK_URL`  | vazio               | leads ficam só no navegador do visitante (localStorage)  |
 | `META_PIXEL_ID`     | vazio               | nenhum rastreamento carregado                            |
