@@ -14,7 +14,7 @@ window.AV_CONFIG = {
      Usado nos links de compartilhamento, canonical e Open Graph.
      Sem barra no final. Ex.: "https://avirada30dias.com.br"
      ------------------------------------------------------------------- */
-  SITE_URL: "",
+  SITE_URL: "https://mbenites2007.github.io/a-virada-30-dias",
 
   /* -------------------------------------------------------------------
      2) ARQUIVO DO EBOOK (PDF)
@@ -99,7 +99,7 @@ window.AV_CONFIG = {
      E-mail que aparece na Política de Privacidade para pedidos de
      exclusão de dados e dúvidas.
      ------------------------------------------------------------------- */
-  CONTACT_EMAIL: "COLOCAR_EMAIL_AQUI",
+  CONTACT_EMAIL: "mbenites2007@gmail.com",
 
   /* -------------------------------------------------------------------
      7) IMAGEM DE COMPARTILHAMENTO (Open Graph)
