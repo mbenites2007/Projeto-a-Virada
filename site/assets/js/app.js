@@ -125,9 +125,48 @@
     // PageView é disparado dentro de loadPixel(), uma única vez por carregamento.
   });
 
+  /* ---------- webhook (cadastros e downloads) ----------
+     Envia um JSON para CFG.LEAD_WEBHOOK_URL. Todo evento leva o campo "event"
+     ("lead" ou "download"). Google Apps Script não responde ao preflight CORS,
+     então para ele o envio vai como text/plain em modo no-cors (resposta opaca,
+     tratada como sucesso). Outros destinos (Make, n8n, Zapier) recebem JSON normal. */
+  function isAppsScript(url) { return /script\.google(usercontent)?\.com/i.test(url); }
+  function postWebhook(payload, opts) {
+    opts = opts || {};
+    var url = CFG.LEAD_WEBHOOK_URL || "";
+    if (!url) return Promise.resolve({ skipped: true });
+    var body = JSON.stringify(payload);
+    // fetch com keepalive sobrevive à troca de página; sendBeacon fica só como reserva
+    // quando fetch não existe (navegadores muito antigos)
+    if (typeof fetch !== "function") {
+      if (opts.beacon && navigator.sendBeacon) {
+        try {
+          if (navigator.sendBeacon(url, new Blob([body], { type: "text/plain;charset=utf-8" }))) return Promise.resolve({ ok: true, beacon: true });
+        } catch (e) {}
+      }
+      return Promise.reject(new Error("fetch indisponível"));
+    }
+    var simple = isAppsScript(url);
+    var ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
+    var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, opts.timeout || 8000) : null;
+    return fetch(url, {
+      method: "POST",
+      mode: simple ? "no-cors" : "cors",
+      headers: { "Content-Type": simple ? "text/plain;charset=utf-8" : "application/json" },
+      body: body,
+      keepalive: true,
+      signal: ctrl ? ctrl.signal : undefined
+    }).then(function (r) {
+      if (timer) clearTimeout(timer);
+      if (r.type === "opaque") return { ok: true, opaque: true };
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return { ok: true };
+    });
+  }
+
   window.AV = {
     cfg: CFG, $: $, $$: $$, track: track, consent: consent,
     siteUrl: siteUrl, absolute: absolute, shareLinks: shareLinks, copyText: copyText,
-    store: store, read: read
+    store: store, read: read, postWebhook: postWebhook
   };
 })();

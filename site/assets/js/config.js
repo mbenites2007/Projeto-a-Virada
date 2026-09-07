@@ -84,11 +84,15 @@ window.AV_CONFIG = {
   PAYMENT_RECEIVER_NAME: "Marcelo Ramos", // nome exibido na página de pagamento, para o visitante conferir
 
   /* -------------------------------------------------------------------
-     5) CAPTURA DE LEADS
-     Cole a URL do webhook que vai RECEBER nome e e-mail.
-     Funciona com: Make, Zapier, n8n, Pipedream, Formspree, Google Apps
-     Script, ActiveCampaign, Mailchimp (via proxy), Brevo, etc.
-     O envio é um POST JSON: { name, email, consent, source, ts }
+     5) CAPTURA DE LEADS E REGISTRO DE DOWNLOADS
+     Cole a URL do webhook que vai RECEBER os eventos do site.
+     Recomendado: planilha Google Sheets + Apps Script (veja a pasta
+     integracao/google-apps-script/ no repositório: script pronto e passo
+     a passo). A URL termina em "/exec". Também funciona com Make, Zapier,
+     n8n, Pipedream etc.
+     Todo envio é um POST JSON com o campo "event":
+       "lead"     -> { name, email, phone, whatsapp_optin, consent, consent_text, source, page, ts, measurement_consent }
+       "download" -> { name, email, file, source, page, ts }
 
      IMPORTANTE: NUNCA coloque aqui uma URL que exija chave secreta no
      frontend. Use um endpoint público de recebimento (webhook) ou uma

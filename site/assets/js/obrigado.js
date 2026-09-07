@@ -20,7 +20,18 @@
     }
   } else showPending();
   function showPending() { pending.hidden = false; dl.setAttribute("aria-describedby", "download-pending"); }
-  dl.addEventListener("click", function () { AV.track("DownloadEbook", { content_name: "A Virada – 30 Dias" }); });
+  dl.addEventListener("click", function () {
+    AV.track("DownloadEbook", { content_name: "A Virada – 30 Dias" });
+    // registro do download no webhook (mesmo destino dos cadastros), sem bloquear o clique
+    AV.postWebhook({
+      event: "download",
+      name: AV.read("av_lead_name") || null,
+      email: AV.read("av_lead_email") || null,
+      file: CFG.EBOOK_FILE_NAME || "",
+      source: "landing-a-virada-30-dias", page: location.href,
+      ts: new Date().toISOString()
+    }, { beacon: true }).catch(function () {});
+  });
 
   /* ---------- 2) PIX ---------- */
   var area = $("#pix-area"), amounts = $$(".amount"), other = $("#amount-other"), otherInput = $("#valor-livre"), otherOk = $("#valor-livre-ok");

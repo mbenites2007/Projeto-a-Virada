@@ -84,22 +84,7 @@
     return false;
   }
 
-  function sendToWebhook(lead) {
-    if (!CFG.LEAD_WEBHOOK_URL) return Promise.resolve({ skipped: true });
-    var ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
-    var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, 8000) : null;
-    return fetch(CFG.LEAD_WEBHOOK_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(lead),
-      signal: ctrl ? ctrl.signal : undefined,
-      keepalive: true
-    }).then(function (r) {
-      if (timer) clearTimeout(timer);
-      if (!r.ok) throw new Error("HTTP " + r.status);
-      return { ok: true };
-    });
-  }
+  function sendToWebhook(lead) { return AV.postWebhook(lead); }
 
   function keepLocally(lead) {
     /* Fallback de emergência: guarda no navegador do visitante para que
@@ -125,6 +110,7 @@
     }
 
     var lead = {
+      event: "lead",
       name: data.name, email: data.email,
       phone: data.phone,                                   // "+5527999999999" ou null
       whatsapp_optin: !!data.phone,                        // só true quando a pessoa informou o número
@@ -137,6 +123,7 @@
     btn.disabled = true; btn.textContent = "LIBERANDO...";
     AV.store("av_lead_ok", "1");
     AV.store("av_lead_name", data.name);
+    AV.store("av_lead_email", data.email);   // usado na página de obrigado para associar o download ao cadastro
 
     function finish() {
       AV.track("Lead", { content_name: "A Virada – 30 Dias" });
