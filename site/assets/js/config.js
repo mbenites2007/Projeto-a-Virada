@@ -93,6 +93,7 @@ window.AV_CONFIG = {
      Todo envio é um POST JSON com o campo "event":
        "lead"     -> { name, email, phone, whatsapp_optin, consent, consent_text, source, page, ts, measurement_consent }
        "download" -> { name, email, file, source, page, ts }
+       "pageview" -> { page, path, title, referrer, referrer_host, utm_source, utm_medium, utm_campaign, first_visit, device, lang, ts }
 
      IMPORTANTE: NUNCA coloque aqui uma URL que exija chave secreta no
      frontend. Use um endpoint público de recebimento (webhook) ou uma

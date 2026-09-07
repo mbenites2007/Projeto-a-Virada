@@ -40,7 +40,7 @@ O PDF vai em `site/assets/ebook/a-virada-30-dias.pdf` (nome exato, minúsculas),
 
 ## Planilha de cadastros e downloads
 
-O site envia cada cadastro (`event: "lead"`) e cada clique em "Baixar" (`event: "download"`) para a URL em
+O site envia cada abertura de página (`event: "pageview"`), cada cadastro (`event: "lead"`) e cada clique em "Baixar" (`event: "download"`) para a URL em
 `LEAD_WEBHOOK_URL`. O destino recomendado é uma planilha Google Sheets com o script em
 `integracao/google-apps-script/Code.gs`; o passo a passo está em `integracao/google-apps-script/PASSO-A-PASSO.md`.
 Depois de implantar, cole a URL `/exec` em `LEAD_WEBHOOK_URL` e publique.

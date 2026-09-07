@@ -2,8 +2,9 @@
  * A VIRADA – 30 DIAS · Webhook de cadastros e downloads (Google Apps Script)
  * ---------------------------------------------------------------------------
  * Este script recebe os eventos enviados pelo site e grava cada um como uma
- * linha na planilha: aba "Cadastros" (event = "lead") e aba "Downloads"
- * (event = "download"). A aba "Resumo" mostra os totais.
+ * linha na planilha: aba "Cadastros" (event = "lead"), aba "Downloads"
+ * (event = "download") e aba "Visitas" (event = "pageview"). A aba "Resumo"
+ * mostra os totais e as origens das visitas.
  *
  * COMO INSTALAR: veja PASSO-A-PASSO.md nesta mesma pasta.
  * Nada aqui precisa ser editado.
@@ -20,6 +21,11 @@ var SHEETS = {
   download: {
     name: "Downloads",
     headers: ["Data/Hora", "Nome", "E-mail", "Arquivo", "Origem", "Página", "Enviado pelo site em (UTC)"]
+  },
+  pageview: {
+    name: "Visitas",
+    headers: ["Data/Hora", "Página", "Caminho", "Título", "Origem (site)", "Referência completa", "UTM origem",
+              "UTM meio", "UTM campanha", "Primeira visita", "Dispositivo", "Idioma", "Enviado pelo site em (UTC)"]
   }
 };
 
@@ -53,7 +59,7 @@ function doPost(e) {
         data.measurement_consent ? "Sim" : "Não",
         s_(data.ts, 40)
       ];
-    } else {
+    } else if (ev === "download") {
       row = [
         now,
         s_(data.name, 80),
@@ -61,6 +67,22 @@ function doPost(e) {
         s_(data.file, 80),
         s_(data.source, 60),
         s_(data.page, 300),
+        s_(data.ts, 40)
+      ];
+    } else {
+      row = [
+        now,
+        s_(data.page, 300),
+        s_(data.path, 120),
+        s_(data.title, 120),
+        s_(data.referrer_host, 120),
+        s_(data.referrer, 300),
+        s_(data.utm_source, 80),
+        s_(data.utm_medium, 80),
+        s_(data.utm_campaign, 120),
+        data.first_visit ? "Sim" : "Não",
+        s_(data.device, 20),
+        s_(data.lang, 20),
         s_(data.ts, 40)
       ];
     }
@@ -74,7 +96,7 @@ function doPost(e) {
 }
 
 /**
- * Cria as abas "Cadastros", "Downloads" e "Resumo" com cabeçalhos e fórmulas.
+ * Cria as abas "Cadastros", "Downloads", "Visitas" e "Resumo" com cabeçalhos e fórmulas.
  * Rode UMA vez pelo editor (selecione "setup" e clique em Executar).
  * Se não rodar, as abas de dados são criadas sozinhas no primeiro evento; só o Resumo fica de fora.
  */
@@ -108,14 +130,19 @@ function resumo_() {
   sh.clear();
   var labels = [
     ["A VIRADA – 30 DIAS · Resumo"],
+    ["Visitas (total)"],
+    ["Visitas hoje"],
+    ["Visitas nos últimos 7 dias"],
+    ["Visitantes novos (primeira visita)"],
     ["Cadastros (total)"],
     ["Cadastros com WhatsApp"],
+    ["Cadastros hoje"],
+    ["Cadastros nos últimos 7 dias"],
     ["Downloads (cliques)"],
     ["Downloads (pessoas distintas)"],
-    ["Cadastros hoje"],
     ["Downloads hoje"],
-    ["Cadastros nos últimos 7 dias"],
     ["Downloads nos últimos 7 dias"],
+    ["Cadastros por visita"],
     ["Downloads por cadastro"]
   ];
   sh.getRange(1, 1, labels.length, 1).setValues(labels);
@@ -123,33 +150,57 @@ function resumo_() {
   // de argumentos é ";" e a primeira tentativa dá #ERROR!; nesse caso reescrevemos com ";".
   var base = [
     [""],
+    ["=MAX(0,COUNTA(Visitas!A:A)-1)"],
+    ["=COUNTIF(Visitas!A:A,\">=\"&TODAY())"],
+    ["=COUNTIF(Visitas!A:A,\">=\"&(TODAY()-6))"],
+    ["=COUNTIF(Visitas!J:J,\"Sim\")"],
     ["=MAX(0,COUNTA(Cadastros!C:C)-1)"],
     ["=COUNTIF(Cadastros!E:E,\"Sim\")"],
+    ["=COUNTIF(Cadastros!A:A,\">=\"&TODAY())"],
+    ["=COUNTIF(Cadastros!A:A,\">=\"&(TODAY()-6))"],
     ["=MAX(0,COUNTA(Downloads!A:A)-1)"],
     ["=IFERROR(ROWS(UNIQUE(FILTER(Downloads!C2:C,Downloads!C2:C<>\"\"))),0)"],
-    ["=COUNTIF(Cadastros!A:A,\">=\"&TODAY())"],
     ["=COUNTIF(Downloads!A:A,\">=\"&TODAY())"],
-    ["=COUNTIF(Cadastros!A:A,\">=\"&(TODAY()-6))"],
     ["=COUNTIF(Downloads!A:A,\">=\"&(TODAY()-6))"],
-    ["=IF(B2=0,0,B4/B2)"]
+    ["=IF(B2=0,0,B6/B2)"],
+    ["=IF(B6=0,0,B10/B6)"]
   ];
   var range = sh.getRange(1, 2, base.length, 1);
   range.setFormulas(base);
   SpreadsheetApp.flush();
-  if (String(sh.getRange("B2").getDisplayValue()).indexOf("#") === 0) {
-    range.setFormulas(base.map(function (r) { return [r[0].replace(/,/g, ";")]; }));
-    SpreadsheetApp.flush();
-  }
+  var ptBR = String(sh.getRange("B2").getDisplayValue()).indexOf("#") === 0;
+  if (ptBR) { range.setFormulas(base.map(function (r) { return [toLocale_(r[0])]; })); SpreadsheetApp.flush(); }
+
+  // Tabelas ao lado: de onde as pessoas chegaram e quais páginas abriram
+  sh.getRange("D1").setValue("Visitas por origem").setFontWeight("bold");
+  var origem = "=IFERROR(QUERY(ARRAYFORMULA(IF(Visitas!A2:A=\"\",\"\",IF(Visitas!E2:E=\"\",\"(direto / sem origem)\",Visitas!E2:E))),"
+             + "\"select Col1, count(Col1) where Col1 <> '' group by Col1 order by count(Col1) desc label Col1 'Origem', count(Col1) 'Visitas'\",0),\"sem visitas ainda\")";
+  sh.getRange("D2").setFormula(ptBR ? toLocale_(origem) : origem);
+  sh.getRange("D12").setValue("Visitas por página").setFontWeight("bold");
+  var pagina = "=IFERROR(QUERY(Visitas!C2:C,\"select C, count(C) where C <> '' group by C order by count(C) desc label C 'Página', count(C) 'Visitas'\",0),\"sem visitas ainda\")";
+  sh.getRange("D13").setFormula(ptBR ? toLocale_(pagina) : pagina);
+
   sh.getRange("A1").setFontWeight("bold").setFontSize(13);
-  sh.getRange("A2:A10").setFontWeight("bold");
-  sh.getRange("B10").setNumberFormat("0%");
-  sh.setColumnWidth(1, 260); sh.setColumnWidth(2, 120);
+  sh.getRange("A2:A15").setFontWeight("bold");
+  sh.getRange("B14:B15").setNumberFormat("0.0%");
+  sh.setColumnWidth(1, 260); sh.setColumnWidth(2, 110); sh.setColumnWidth(3, 30); sh.setColumnWidth(4, 260); sh.setColumnWidth(5, 90);
   ss.setActiveSheet(sh); ss.moveActiveSheet(1);
   // remove a aba vazia criada por padrão ("Página1" / "Sheet1"), se ainda existir
   ss.getSheets().forEach(function (x) {
     var n = x.getName();
     if (/^(Página|Sheet|Hoja|Feuille)\s*1$/i.test(n) && x.getLastRow() === 0 && ss.getSheets().length > 1) ss.deleteSheet(x);
   });
+}
+
+/** Troca "," por ";" apenas fora de aspas duplas (para planilhas em português). */
+function toLocale_(f) {
+  var out = "", inQ = false;
+  for (var i = 0; i < f.length; i++) {
+    var c = f.charAt(i);
+    if (c === "\"") inQ = !inQ;
+    out += (c === "," && !inQ) ? ";" : c;
+  }
+  return out;
 }
 
 function parse_(e) {

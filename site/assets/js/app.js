@@ -123,11 +123,45 @@
     if (c === "measure") loadPixel();
     else if (c == null) showBanner();
     // PageView é disparado dentro de loadPixel(), uma única vez por carregamento.
+    pageview();
   });
 
-  /* ---------- webhook (cadastros e downloads) ----------
+  /* ---------- registro de visita (anônimo) ----------
+     Uma linha por abertura de página na aba "Visitas" da planilha: página, origem
+     (referrer/UTM), dispositivo e se é a primeira visita neste navegador.
+     Sem cookies e sem identificador de pessoa. Não roda em localhost/arquivo local
+     (passe force=true para testar). */
+  function pageview(force) {
+    var host = location.hostname;
+    if (!force && (location.protocol === "file:" || host === "localhost" || host === "127.0.0.1")) return Promise.resolve({ skipped: true });
+    var q = {};
+    try {
+      location.search.replace(/^\?/, "").split("&").forEach(function (kv) {
+        if (!kv) return; var p = kv.split("=");
+        q[decodeURIComponent(p[0])] = decodeURIComponent((p[1] || "").replace(/\+/g, " "));
+      });
+    } catch (e) {}
+    var ref = document.referrer || "", refHost = "";
+    try { refHost = ref ? new URL(ref).hostname.replace(/^www\./, "") : ""; } catch (e) {}
+    if (refHost === host) { ref = ""; refHost = ""; } // navegação interna não conta como origem
+    var first = read("av_seen") !== "1"; store("av_seen", "1");
+    return postWebhook({
+      event: "pageview",
+      page: location.href.split("#")[0],
+      path: location.pathname,
+      title: document.title,
+      referrer: ref, referrer_host: refHost,
+      utm_source: q.utm_source || "", utm_medium: q.utm_medium || "", utm_campaign: q.utm_campaign || "",
+      first_visit: first,
+      device: window.matchMedia && window.matchMedia("(max-width: 767px)").matches ? "celular" : "computador",
+      lang: navigator.language || "",
+      ts: new Date().toISOString()
+    }).catch(function () {});
+  }
+
+  /* ---------- webhook (cadastros, downloads e visitas) ----------
      Envia um JSON para CFG.LEAD_WEBHOOK_URL. Todo evento leva o campo "event"
-     ("lead" ou "download"). Google Apps Script não responde ao preflight CORS,
+     ("lead", "download" ou "pageview"). Google Apps Script não responde ao preflight CORS,
      então para ele o envio vai como text/plain em modo no-cors (resposta opaca,
      tratada como sucesso). Outros destinos (Make, n8n, Zapier) recebem JSON normal. */
   function isAppsScript(url) { return /script\.google(usercontent)?\.com/i.test(url); }
@@ -167,6 +201,6 @@
   window.AV = {
     cfg: CFG, $: $, $$: $$, track: track, consent: consent,
     siteUrl: siteUrl, absolute: absolute, shareLinks: shareLinks, copyText: copyText,
-    store: store, read: read, postWebhook: postWebhook
+    store: store, read: read, postWebhook: postWebhook, pageview: pageview
   };
 })();

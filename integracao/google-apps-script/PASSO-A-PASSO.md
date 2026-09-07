@@ -43,6 +43,8 @@ A URL continua a mesma.
 - **Cadastros**: data/hora (horário de Brasília), nome, e-mail, WhatsApp (formato +55...), se aceitou WhatsApp,
   consentimento e o texto exato aceito, origem, página, se aceitou medição, e o horário enviado pelo site.
 - **Downloads**: data/hora, nome e e-mail (quando a pessoa se cadastrou no mesmo navegador), arquivo, origem, página.
-- **Resumo**: totais, hoje, últimos 7 dias, pessoas distintas que baixaram e downloads por cadastro.
+- **Visitas**: uma linha por abertura de página, com página, origem (site de onde veio, UTM), dispositivo, idioma e se é a
+  primeira visita naquele navegador. Sem nome, e-mail, IP ou identificador de pessoa.
+- **Resumo**: visitas, cadastros e downloads (total, hoje, últimos 7 dias), taxas de conversão e tabelas de visitas por origem e por página.
 
 Os dados ficam só na sua conta Google. Para pedidos de exclusão (LGPD), apague a linha correspondente.
