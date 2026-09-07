@@ -27,6 +27,11 @@ jobs:
         uses: actions/configure-pages@v5
         with:
           enablement: true
+      - name: Carimbar versão dos assets (evita cache antigo no navegador)
+        run: |
+          BUILD="${GITHUB_SHA::7}"
+          sed -i "s/__BUILD__/${BUILD}/g" site/*.html
+          grep -o 'v=[0-9a-f]\{7\}' site/obrigado.html | head -1
       - name: Empacotar pasta site/
         uses: actions/upload-pages-artifact@v3
         with:
