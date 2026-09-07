@@ -34,10 +34,77 @@
   else if (CFG.PIX_DYNAMIC_AMOUNT && CFG.PIX_KEY && CFG.PIX_RECEIVER_NAME && CFG.PIX_CITY) mode = "dynamic";
   if (CFG.PIX_PAYLOAD && !staticCheck.ok) console.warn("[A Virada] PIX_PAYLOAD inválido e ignorado: " + staticCheck.reason);
 
+  /* ---------- 2b) LINK DE PAGAMENTO (alternativa ao Pix direto) ---------- */
+  var payLinks = (Array.isArray(CFG.PAYMENT_LINKS) ? CFG.PAYMENT_LINKS : []).filter(function (l) {
+    return l && /^https:\/\//i.test(String(l.url || "")) && Number(l.amount) > 0;
+  }).sort(function (a, b) { return Number(a.amount) - Number(b.amount); });
+  if (mode === "none" && payLinks.length) mode = "links";
+
   if (mode === "none") {
-    // CONFIGURAR PIX ANTES DE PUBLICAR
+    // CONFIGURAR PIX (ou PAYMENT_LINKS) ANTES DE PUBLICAR
     unavailable.hidden = false;
     $(".amounts").hidden = true;
+  }
+
+  if ((mode === "static" || mode === "dynamic") && payLinks.length) {
+    var alt = $("#link-alt");
+    alt.textContent = "Prefere cartão ou boleto? ";
+    payLinks.forEach(function (l, i) {
+      if (i > 0) alt.appendChild(document.createTextNode(" · "));
+      var a = document.createElement("a");
+      a.href = l.url; a.target = "_blank"; a.rel = "noopener";
+      a.textContent = "Contribuir com " + formatBRL(l.amount) + " pelo " + (l.provider || "link de pagamento");
+      a.addEventListener("click", function () { AV.track("PaymentLinkClicked", { value: Number(l.amount), currency: "BRL", provider: l.provider }); });
+      alt.appendChild(a);
+    });
+    alt.appendChild(document.createTextNode("."));
+    alt.hidden = false;
+  }
+
+  if (mode === "links") {
+    var linkCard = $("#link-card"), linkQr = $("#link-qr"), linkHint = $("#link-hint"), linkOpen = $("#link-open"),
+        linkCopy = $("#link-copy"), linkCopied = $("#link-copied"), linkMethods = $("#link-methods"), currentLink = null;
+    var contribNote = $("#contrib-note");
+    if (contribNote) contribNote.textContent = "Contribuir não é obrigatório. O guia continua seu de qualquer forma.";
+    other.classList.remove("show"); other.hidden = true;
+    var amountsBox = $(".amounts");
+    var showLink = function (l) {
+      currentLink = l;
+      var provider = l.provider || "link de pagamento";
+      var who = CFG.PAYMENT_RECEIVER_NAME ? " Recebedor: " + CFG.PAYMENT_RECEIVER_NAME + "." : "";
+      linkHint.textContent = "Contribuição de " + formatBRL(l.amount) + " via " + provider + "." + who;
+      linkQr.innerHTML = window.AVQR.toSVG(l.url, { ecc: "M", label: "QR Code do link de pagamento de " + formatBRL(l.amount) });
+      linkOpen.href = l.url;
+      linkOpen.textContent = "CONTRIBUIR COM " + formatBRL(l.amount);
+      linkMethods.textContent = "Na página do " + provider + " você escolhe Pix, cartão ou boleto. No celular, toque no botão; no computador, escaneie o QR.";
+      linkCopied.textContent = "";
+      linkCard.hidden = false;
+    };
+    if (payLinks.length === 1) { amountsBox.hidden = true; showLink(payLinks[0]); }
+    else {
+      amountsBox.innerHTML = "";
+      payLinks.forEach(function (l, i) {
+        var b = document.createElement("button");
+        b.type = "button"; b.className = "amount"; b.textContent = formatBRL(l.amount);
+        b.setAttribute("aria-pressed", i === 0 ? "true" : "false");
+        b.addEventListener("click", function () {
+          $$(".amount", amountsBox).forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+          showLink(l); linkCard.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        });
+        amountsBox.appendChild(b);
+      });
+      showLink(payLinks[0]);
+    }
+    linkOpen.addEventListener("click", function () {
+      AV.track("PaymentLinkClicked", { value: currentLink ? Number(currentLink.amount) : undefined, currency: "BRL", provider: currentLink ? currentLink.provider : undefined });
+    });
+    linkCopy.addEventListener("click", function () {
+      if (!currentLink) return;
+      AV.copyText(currentLink.url).then(function () {
+        linkCopied.textContent = "Link copiado. Abra no navegador ou envie para você mesmo.";
+        AV.track("PaymentLinkCopied");
+      }).catch(function () { linkCopied.textContent = "Não foi possível copiar. Use o botão acima para abrir o link."; });
+    });
   }
 
   function formatBRL(n) { return "R$ " + Number(n).toFixed(2).replace(".", ","); }

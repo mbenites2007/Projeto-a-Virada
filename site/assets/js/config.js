@@ -62,9 +62,26 @@ window.AV_CONFIG = {
   PIX_KEY: "",              // CPF/CNPJ (só números), e-mail, telefone (+55...) ou chave aleatória
   PIX_RECEIVER_NAME: "",    // Nome do recebedor, máx. 25 caracteres, sem acento
   PIX_CITY: "",             // Cidade do recebedor, máx. 15 caracteres, sem acento
-  PIX_PAYLOAD: "",          // Cole aqui o "copia e cola" estático (Opção A)
+  PIX_PAYLOAD: "00020101021126580014BR.GOV.BCB.PIX013639b66686-ddcb-4d8e-9655-73b139e115b65204000053039865802BR5925Marcelo Ricardo Benites R6009SAO PAULO62080504daqr6304D533", // Pix Copia e Cola estático (Opção A), chave aleatória, sem valor fixo
   PIX_DYNAMIC_AMOUNT: false,// true só se você preencheu KEY + NAME + CITY (Opção B)
   PIX_SUGGESTED_AMOUNTS: [9.90, 19.90, 29.90],
+
+  /* -------------------------------------------------------------------
+     4b) LINK DE PAGAMENTO (Mercado Pago, PagSeguro, Stripe etc.)
+     Alternativa ao Pix direto. Cada item é um link de pagamento com
+     valor fixo, criado no painel do provedor. Se PIX_PAYLOAD/PIX_KEY
+     estiverem vazios e houver links aqui, a seção de contribuição mostra
+     botão + QR Code do link; quem paga escolhe Pix, cartão ou boleto na
+     página do provedor.
+       Um link só   -> a página mostra direto o botão daquele valor.
+       Vários links -> aparece um botão por valor (ordem crescente).
+     Para adicionar outro valor, crie um novo link no provedor e inclua
+     uma linha { amount: 19.90, url: "https://...", provider: "Mercado Pago" }.
+     ------------------------------------------------------------------- */
+  PAYMENT_LINKS: [
+    { amount: 9.90, url: "https://mpago.la/1vWger7", provider: "Mercado Pago" }
+  ],
+  PAYMENT_RECEIVER_NAME: "Marcelo Ramos", // nome exibido na página de pagamento, para o visitante conferir
 
   /* -------------------------------------------------------------------
      5) CAPTURA DE LEADS

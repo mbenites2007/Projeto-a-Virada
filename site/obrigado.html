@@ -81,7 +81,7 @@
           <div class="intro measure">
             <p>A Virada é disponibilizado gratuitamente para que qualquer pessoa possa começar.</p>
             <p>Se este conteúdo trouxe clareza, direção ou alguma mudança positiva para você, e você quiser ajudar o projeto a continuar alcançando outras pessoas, pode fazer uma contribuição voluntária.</p>
-            <p>Não existe valor mínimo e contribuir não é obrigatório.</p>
+            <p id="contrib-note">Não existe valor mínimo e contribuir não é obrigatório.</p>
           </div>
 
           <div id="pix-area">
@@ -107,11 +107,24 @@
               <span class="copied" id="pix-copied" aria-live="polite"></span>
             </div>
 
+            <!-- Alternativa ao Pix (cartão/boleto) quando PAYMENT_LINKS também está preenchido -->
+            <p class="note link-alt" id="link-alt" hidden></p>
+
+            <!-- LINK DE PAGAMENTO (Mercado Pago etc.): usado quando PAYMENT_LINKS está preenchido e o Pix direto não -->
+            <div class="pix-card" id="link-card" hidden>
+              <p class="note" id="link-hint" style="margin:0"></p>
+              <div class="qr" id="link-qr" aria-label="QR Code do link de pagamento"></div>
+              <a class="btn btn-navy" id="link-open" href="#" target="_blank" rel="noopener">CONTRIBUIR AGORA</a>
+              <button type="button" class="btn btn-ghost" id="link-copy">COPIAR LINK DE PAGAMENTO</button>
+              <span class="copied" id="link-copied" aria-live="polite"></span>
+              <p class="note" id="link-methods" style="margin:0"></p>
+            </div>
+
             <!-- CONFIGURAR PIX ANTES DE PUBLICAR: este bloco aparece enquanto o Pix não estiver configurado -->
             <div class="pix-unavailable" id="pix-unavailable" hidden>
               <strong>Contribuição por Pix ainda não disponível.</strong><br>
               O responsável pelo projeto ainda não configurou a chave. Enquanto isso, se quiser ajudar, compartilhe A Virada com alguém.
-              <span class="note" style="display:block;margin-top:.5rem">Admin: preencha <code>PIX_PAYLOAD</code> (ou <code>PIX_KEY</code> + nome + cidade) em <code>assets/js/config.js</code>.</span>
+              <span class="note" style="display:block;margin-top:.5rem">Admin: preencha <code>PIX_PAYLOAD</code> (ou <code>PIX_KEY</code> + nome + cidade) ou <code>PAYMENT_LINKS</code> em <code>assets/js/config.js</code>.</span>
             </div>
           </div>
 

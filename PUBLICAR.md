@@ -31,7 +31,8 @@ Abrir http://localhost:8080
 | `SITE_URL`          | configurado         | https://mbenites2007.github.io/Projeto-a-Virada           |
 | PDF do ebook        | publicado (40 pág., 8 MB) | botão de download entrega o arquivo                  |
 | `CONTACT_EMAIL`     | configurado         | aparece na política de privacidade e no rodapé            |
-| `PIX_PAYLOAD`/`PIX_KEY` | vazios          | seção de contribuição aparece como "indisponível"        |
+| `PIX_PAYLOAD`       | configurado (chave aleatória, sem valor) | QR Pix + copia e cola; sugestões 9,90/19,90/29,90 |
+| `PAYMENT_LINKS`     | 1 link Mercado Pago (R$ 9,90) | aparece como alternativa "cartão ou boleto" abaixo do Pix |
 | `LEAD_WEBHOOK_URL`  | vazio               | leads ficam só no navegador do visitante (localStorage)  |
 | `META_PIXEL_ID`     | vazio               | nenhum rastreamento carregado                            |
 
