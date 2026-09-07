@@ -1,9 +1,0 @@
-COLOQUE O PDF DO EBOOK NESTA PASTA com o nome exato:
-
-    a-virada-30-dias.pdf
-
-Caminho final: /assets/ebook/a-virada-30-dias.pdf
-
-Esse caminho já está configurado em assets/js/config.js (EBOOK_DOWNLOAD_URL).
-Se quiser outro nome ou hospedar em outro lugar, altere só a configuração.
-Comprima o PDF antes de publicar (ideal: abaixo de 5 MB) para o download ser rápido no celular.
