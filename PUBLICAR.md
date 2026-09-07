@@ -33,7 +33,7 @@ Abrir http://localhost:8080
 | `CONTACT_EMAIL`     | configurado         | aparece na política de privacidade e no rodapé            |
 | `PIX_PAYLOAD`       | configurado (chave aleatória, sem valor) | QR Pix + copia e cola; sugestões 9,90/19,90/29,90 |
 | `PAYMENT_LINKS`     | 1 link Mercado Pago (R$ 9,90) | aparece como alternativa "cartão ou boleto" abaixo do Pix |
-| `LEAD_WEBHOOK_URL`  | vazio (aguardando URL do Apps Script) | cadastros e downloads ficam só no navegador do visitante |
+| `LEAD_WEBHOOK_URL`  | configurado (Apps Script) | cadastros e downloads gravados na planilha "A Virada – Cadastros" |
 | `META_PIXEL_ID`     | vazio               | nenhum rastreamento carregado                            |
 
 O PDF vai em `site/assets/ebook/a-virada-30-dias.pdf` (nome exato, minúsculas), de preferência abaixo de 5 MB.

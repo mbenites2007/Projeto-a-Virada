@@ -119,8 +119,9 @@ function resumo_() {
     ["Downloads por cadastro"]
   ];
   sh.getRange(1, 1, labels.length, 1).setValues(labels);
-  // Fórmulas em sintaxe en-US (o Apps Script converte para o idioma da planilha)
-  var formulas = [
+  // Fórmulas escritas com "," (padrão en-US). Se a planilha estiver em português, o separador
+  // de argumentos é ";" e a primeira tentativa dá #ERROR!; nesse caso reescrevemos com ";".
+  var base = [
     [""],
     ["=MAX(0,COUNTA(Cadastros!C:C)-1)"],
     ["=COUNTIF(Cadastros!E:E,\"Sim\")"],
@@ -132,12 +133,23 @@ function resumo_() {
     ["=COUNTIF(Downloads!A:A,\">=\"&(TODAY()-6))"],
     ["=IF(B2=0,0,B4/B2)"]
   ];
-  sh.getRange(1, 2, formulas.length, 1).setFormulas(formulas);
+  var range = sh.getRange(1, 2, base.length, 1);
+  range.setFormulas(base);
+  SpreadsheetApp.flush();
+  if (String(sh.getRange("B2").getDisplayValue()).indexOf("#") === 0) {
+    range.setFormulas(base.map(function (r) { return [r[0].replace(/,/g, ";")]; }));
+    SpreadsheetApp.flush();
+  }
   sh.getRange("A1").setFontWeight("bold").setFontSize(13);
   sh.getRange("A2:A10").setFontWeight("bold");
   sh.getRange("B10").setNumberFormat("0%");
   sh.setColumnWidth(1, 260); sh.setColumnWidth(2, 120);
   ss.setActiveSheet(sh); ss.moveActiveSheet(1);
+  // remove a aba vazia criada por padrão ("Página1" / "Sheet1"), se ainda existir
+  ss.getSheets().forEach(function (x) {
+    var n = x.getName();
+    if (/^(Página|Sheet|Hoja|Feuille)\s*1$/i.test(n) && x.getLastRow() === 0 && ss.getSheets().length > 1) ss.deleteSheet(x);
+  });
 }
 
 function parse_(e) {

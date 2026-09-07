@@ -102,7 +102,7 @@ window.AV_CONFIG = {
      guarda o lead localmente no navegador (fallback de emergência) e
      libera a página de obrigado normalmente.
      ------------------------------------------------------------------- */
-  LEAD_WEBHOOK_URL: "",
+  LEAD_WEBHOOK_URL: "https://script.google.com/macros/s/AKfycbx7OokeRwiOgn73Csi0F37ZlhsLt_G3bnlGZ9apIl9Nffsjv7WKpAs9RdRX9ykEOpzZ/exec", // planilha "A Virada – Cadastros" (Google Apps Script)
 
   /* -------------------------------------------------------------------
      5b) CAMPO DE TELEFONE / WHATSAPP
